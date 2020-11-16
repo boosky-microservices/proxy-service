@@ -1,0 +1,8 @@
+{
+  "gateway": {
+    "host": "http://localhost:3000"
+  },
+  "review": {
+    "host": "http://localhost:3001"
+  }
+}

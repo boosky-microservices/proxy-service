@@ -1,10 +1,11 @@
-const http = require('http'),
-    httpProxy = require('http-proxy');
-
+const http = require('http');
+const httpProxy = require('http-proxy');
+const services = require('./services.json');
 //
 // Create a proxy server with custom application logic
 //
 const proxy = httpProxy.createProxyServer({});
+const gatewayHost = services['gateway']['host'];
 
 //
 // Create your custom server and just call `proxy.web()` to proxy
@@ -14,7 +15,12 @@ const proxy = httpProxy.createProxyServer({});
 const server = http.createServer((req, res) => {
     // You can define here your custom logic to handle the request
     // and then proxy the request.
-    proxy.web(req, res, { target: 'http://127.0.0.1:5050' });
+    console.log(req.url.split('/'));
+    const [, baseRoute, apiVersion, servicePath] = req.url.split('/');
+    const service = services[servicePath];
+    const options = { target: !!service ? service['host'] : gatewayHost };
+    proxy.web(req, res, options);
+    console.log("routing request to " + options.target);
 });
 
 console.log("listening on port 5050");
